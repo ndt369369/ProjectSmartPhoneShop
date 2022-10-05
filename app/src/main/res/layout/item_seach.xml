@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:background="@drawable/boder_sp"
+    android:layout_margin="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="100dp"
+        android:id="@+id/img_seachsp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginLeft="8dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:textStyle="bold"
+            android:text="ten san pham"
+            android:textColor="#0E0E0E"
+            android:textSize="16dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_ten_seachsp"/>
+        <TextView
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:text="gia san pham"
+            android:textStyle="bold"
+            android:textSize="15dp"
+            android:textColor="#F44336"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:id="@+id/tv_gia_seachsp"/>
+    </LinearLayout>
+
+</LinearLayout>

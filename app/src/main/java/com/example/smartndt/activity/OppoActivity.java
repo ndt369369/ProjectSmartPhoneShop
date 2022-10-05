@@ -1,0 +1,122 @@
+package com.example.smartndt.activity;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.smartndt.R;
+import com.example.smartndt.adapter.AdapterOppo;
+import com.example.smartndt.modle.SanPham;
+import com.example.smartndt.ulti.LinkServer;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class OppoActivity extends AppCompatActivity {
+Toolbar toolbar;
+RecyclerView recyclerView;
+private AdapterOppo adapterOppo;
+private List<SanPham> sanPhamList;
+private  int idsph;
+private int page;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_oppo);
+        anhXa();
+        getSanPhamOppo(page);
+        getIdHang();
+        toolbarOppo();
+    }
+
+    private void getSanPhamOppo(int page) {
+        String link = LinkServer.sanphamtheoidhang + String.valueOf(page);
+        StringRequest  stringRequest = new StringRequest(Request.Method.POST, link, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+               if (response != null){
+                   try {
+                       JSONArray jsonArray = new JSONArray(response);
+                       for (int i = 0; i < response.length(); i++){
+                           JSONObject jsonObject  = jsonArray.getJSONObject(i);
+                           int id = jsonObject.getInt("id");
+                           String tenSP = jsonObject.getString("tensp");
+                           int giaSP = jsonObject.getInt("giasp");
+                           String hinhSP = jsonObject.getString("hinhanhsp");
+                           String moTaSP = jsonObject.getString("motasp");
+                           int idhang = jsonObject.getInt("idhangsp");
+                           sanPhamList.add(new SanPham(id,tenSP,giaSP,hinhSP,moTaSP,idhang));
+                           adapterOppo.notifyDataSetChanged();
+                       }
+                   } catch (JSONException e) {
+                       e.printStackTrace();
+                   }
+
+               }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }){
+            @Nullable
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String, String> hashMap = new HashMap<>();
+                hashMap.put("idhangsanpham", String.valueOf(idsph));
+                return hashMap;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
+
+    private void getIdHang() {
+        idsph = getIntent().getIntExtra("idhangsanpham", -1);
+        Log.d("idspo", String.valueOf(idsph));
+    }
+
+    private void toolbarOppo() {
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_ios_24);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void anhXa() {
+        toolbar = findViewById(R.id.toolba_oppo);
+        recyclerView = findViewById(R.id.rv_sp_oppo);
+        sanPhamList = new ArrayList<>();
+        adapterOppo = new AdapterOppo(this,sanPhamList);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapterOppo);
+    }
+}
