@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.android.volley.RequestQueue;
@@ -33,6 +34,12 @@ import com.example.smartndt.modle.SanPham;
 import com.example.smartndt.adapter.AdapterHangSP;
 import com.example.smartndt.adapter.AdapterSanPham;
 import com.example.smartndt.adapter.AdapterSanPhamMoiNhat;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
@@ -43,8 +50,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    ViewFlipper viewFlipper;
-    TextView textView;
+ViewFlipper viewFlipper;
+TextView textView;
 RecyclerView recyclerView,recyclerView1,recyclerView2;
 List<HangSP> hangSPList;
 List<SanPham> sanPhamList;
@@ -53,6 +60,8 @@ AdapterHangSP adapterHangSP;
 int id = 0;
 String tenhangsanpham = "";
 String hinhanhhang = "";
+GoogleSignInOptions gso;
+GoogleSignInClient gsc;
 public static ArrayList<GioHang> gioHangArrayList;
     private DrawerLayout drawerMain;
     private NavigationView navMain;
@@ -66,6 +75,12 @@ public static ArrayList<GioHang> gioHangArrayList;
 
     }
     private void anhxa() {
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        gsc = GoogleSignIn.getClient(this,gso);
+        GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
+        if (googleSignInAccount != null){
+            Toast.makeText(MainActivity.this,String.valueOf(googleSignInAccount.getEmail()),Toast.LENGTH_LONG).show();
+        }
         hangSPList = new ArrayList<>();
         getDulieuHangsp();
         adapterHangSP = new AdapterHangSP(this,hangSPList);
@@ -229,6 +244,7 @@ public static ArrayList<GioHang> gioHangArrayList;
             case R.id.menu_trangchu:
                 break;
             case R.id.menu_sanpham:
+                Toast.makeText(getApplicationContext(),"dsabfhbfhsb",Toast.LENGTH_LONG).show();
                 break;
             case R.id.menu_call:
                 String phone = "0964839150";
@@ -242,9 +258,20 @@ public static ArrayList<GioHang> gioHangArrayList;
 
                 break;
             case R.id.menu_dangxuat:
+                signOut();
                 break;
         }
         drawerMain.closeDrawer(GravityCompat.START);
         return false;
+    }
+
+    private void signOut() {
+        gsc.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                finish();
+                startActivity(new Intent(MainActivity.this,DangNhapActivity.class));
+            }
+        });
     }
 }
